@@ -53,7 +53,7 @@ func (r *Newsrepository) GetNews() ([]modelNews.News, error) {
 			return nil, err
 		}
 
-		t, err := time.Parse("2/1/2006", tstr)
+		t, err := time.Parse("2006-01-02T15:04:05", tstr)
 		if err != nil {
 			return nil, err
 		}

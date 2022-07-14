@@ -53,9 +53,10 @@ func (s *server) handleNews() http.HandlerFunc {
 	}
 }
 
-func (s *server) DownloadNews() http.HandlerFunc {
+// Обработчик для скачивания картинок для новостей (table news)
+func (s *server) Download() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		key := strings.ReplaceAll(r.URL.Path, "/download/", "")
+		key := r.URL.Path
 
 		path := strings.Join([]string{"assets", key}, "/")
 		fileBytes, err := ioutil.ReadFile(path)
@@ -68,5 +69,17 @@ func (s *server) DownloadNews() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.Write(fileBytes)
+	})
+}
+
+func (s *server) handleBroadcast() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data, err := s.store.Broadcast().GetBroadcast()
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+		}
+
+		s.respond(w, r, http.StatusOK, data)
 	})
 }

@@ -18,6 +18,7 @@ type server struct {
 	sessionStore sessions.Store
 }
 
+// Создаем сервер с определенной конфигурацией
 func NewServer(store store.Store, sessionStore sessions.Store) *server {
 	s := &server{
 		router:       mux.NewRouter(),
@@ -42,9 +43,12 @@ func (s *server) configureRouter() {
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
 	s.router.HandleFunc("/news", s.handleNews()).Methods("GET")
-	s.router.HandleFunc("/news/{key}", s.DownloadNews()).Methods("GET")
+	s.router.HandleFunc("/news/{key}", s.Download()).Methods("GET")
+	s.router.HandleFunc("/broadcast", s.handleBroadcast()).Methods("GET")
+	s.router.HandleFunc("/broadcast/{key}", s.Download()).Methods("GET")
 }
 
+// Configuration of logger ...
 func (s *server) configureLogger(config *Config) error {
 	level, err := logrus.ParseLevel(config.LogLevel)
 	if err != nil {

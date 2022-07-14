@@ -8,9 +8,10 @@ import (
 
 // Store for clients ...
 type SqlStore struct {
-	DbURL          string
-	Db             *sql.DB
-	Newsrepository *Newsrepository
+	DbURL               string
+	Db                  *sql.DB
+	Newsrepository      *Newsrepository
+	Broadcastrepository *Broadcastrepository
 }
 
 // New Store ...
@@ -52,6 +53,18 @@ func (s *SqlStore) CreateTables() error {
 		author      	varchar(50)  not null default '',
 		txt				Text		 not null,
 		time			DATETIME	 not null,
+		picURL			varchar(50)  
+	)`)
+	if err != nil {
+		return err
+	}
+	statement.Exec()
+	statement.Close()
+
+	statement, err = s.Db.Prepare(`create table IF NOT EXISTS broadcast (
+		id              integer      not null PRIMARY KEY AUTO_INCREMENT,
+		name			varchar(50)	 not null default 'Noname',
+		broadURL		varchar(50),
 		picURL			varchar(50)  
 	)`)
 	if err != nil {

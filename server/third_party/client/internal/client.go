@@ -1,6 +1,7 @@
 package ServerClient
 
 import (
+	modelBroadcast "Smart-city/internal/apiserver/model/broadcast"
 	modelNews "Smart-city/internal/apiserver/model/news"
 	"encoding/json"
 	"io"
@@ -39,8 +40,8 @@ func DownloadNews() []string {
 	return URL
 }
 
-func GetPic(url string) {
-	res, err := http.Get(strings.Join([]string{"http://localhost:8080/news", url}, "/"))
+func GetPic(url string, urlfull string) {
+	res, err := http.Get(strings.Join([]string{"http://localhost:8080", urlfull}, "/"))
 
 	if err != nil {
 		log.Fatalf("Got error %s", err.Error())
@@ -62,4 +63,30 @@ func GetPic(url string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func GetBroadcast() []string {
+	resp, err := http.Get("http://localhost:8080/broadcast")
+	if err != nil {
+		log.Fatalf("Got error %s", err.Error())
+		return nil
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	results := []modelBroadcast.Broadcast{}
+	json.Unmarshal(body, &results)
+
+	URL := []string{}
+
+	for _, result := range results {
+		log.Println(result)
+		URL = append(URL, result.PicURL)
+	}
+
+	return URL
 }

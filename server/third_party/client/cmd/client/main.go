@@ -15,4 +15,8 @@ func main() {
 	for _, url := range URL {
 		ServerClient.GetPic(url, strings.Join([]string{"broadcast", url}, "/"))
 	}
+
+	id_user := 1
+	ServerClient.UploadTimetable(id_user)
+	ServerClient.GetTimetable(id_user)
 }

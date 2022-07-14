@@ -2,7 +2,9 @@ package apiserver
 
 import (
 	Constants "Smart-city/internal/apiserver"
+	modeltimetable "Smart-city/internal/apiserver/model/timetable"
 	"context"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -82,4 +84,49 @@ func (s *server) handleBroadcast() http.HandlerFunc {
 
 		s.respond(w, r, http.StatusOK, data)
 	})
+}
+
+func (s *server) handleUploadTimetable() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &modeltimetable.Timetable{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.Err(w, r, http.StatusBadRequest, err)
+			s.Logger.Error(err)
+			return
+		}
+
+		if err := s.store.Timetable().Create(req); err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, req.Id)
+	}
+}
+
+func (s *server) handleGetTimetable() http.HandlerFunc {
+	type answer struct {
+		Id    int    `json:"id"`
+		Title string `json:"title"`
+		Txt   string `json:"text"`
+		Time  int    `json:"time"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &modeltimetable.Timetable{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.Err(w, r, http.StatusBadRequest, err)
+			s.Logger.Error(err)
+			return
+		}
+
+		data, err := s.store.Timetable().GetTimetable(req.IdUser)
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+		}
+
+		s.respond(w, r, http.StatusOK, data)
+	}
 }

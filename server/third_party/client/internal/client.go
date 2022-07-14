@@ -3,6 +3,8 @@ package ServerClient
 import (
 	modelBroadcast "Smart-city/internal/apiserver/model/broadcast"
 	modelNews "Smart-city/internal/apiserver/model/news"
+	modeltimetable "Smart-city/internal/apiserver/model/timetable"
+	"bytes"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -89,4 +91,71 @@ func GetBroadcast() []string {
 	}
 
 	return URL
+}
+
+func UploadTimetable(idUser int) {
+	message := &modeltimetable.Timetable{
+		IdUser: idUser,
+		Title:  "title",
+		Txt:    "txt",
+		Time:   1654009999,
+	}
+
+	bytesRepresentation, err := json.Marshal(message)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	resp, err := http.Post("http://localhost:8080/upload/timetable", "application/json", bytes.NewBuffer(bytesRepresentation))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	var result int
+	json.Unmarshal(body, &result)
+
+	log.Println(result)
+}
+
+func GetTimetable(idUser int) {
+	message := &modeltimetable.Timetable{
+		IdUser: idUser,
+	}
+
+	bytesRepresentation, err := json.Marshal(message)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	resp, err := http.Post("http://localhost:8080/timetabel", "application/json", bytes.NewBuffer(bytesRepresentation))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	log.Println(resp.Status)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	results := []modeltimetable.Timetable{}
+	json.Unmarshal(body, &results)
+
+	for _, result := range results {
+		log.Println(result)
+	}
 }

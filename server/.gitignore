@@ -1,5 +1,0 @@
-apiserver.exe
-.vscode
-client.exe
-internal/apiserver/tests/server/assets
-third_party/client/download

@@ -1,1 +1,5 @@
-
+server/apiserver.exe
+.vscode
+server/client.exe
+server/internal/apiserver/tests/server/assets
+server/third_party/client/download

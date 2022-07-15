@@ -46,9 +46,12 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/news/{key}", s.Download()).Methods("GET")
 	s.router.HandleFunc("/broadcast", s.handleBroadcast()).Methods("GET")
 	s.router.HandleFunc("/broadcast/{key}", s.Download()).Methods("GET")
+	s.router.HandleFunc("/scoreboard", s.handleGetScoreboard()).Methods("GET")
+	s.router.HandleFunc("/regions", s.handleGetRegions()).Methods("GET")
+	s.router.HandleFunc("/TeAm/{key}", s.handleGetTeam()).Methods("GET")
+	s.router.HandleFunc("/TimeTabel/{key}", s.handleGetTimetable()).Methods("GET")
 
 	s.router.HandleFunc("/upload/timetable", s.handleUploadTimetable()).Methods("POST")
-	s.router.HandleFunc("/timetabel", s.handleGetTimetable()).Methods("POST")
 }
 
 // Configuration of logger ...

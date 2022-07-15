@@ -2,11 +2,13 @@ package apiserver
 
 import (
 	Constants "Smart-city/internal/apiserver"
+	modelScoreboard "Smart-city/internal/apiserver/model/scoreboard"
 	modeltimetable "Smart-city/internal/apiserver/model/timetable"
 	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +18,7 @@ import (
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		uuID := uuid.New().String()
 		w.Header().Set("X-Request-ID", uuID)
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), Constants.CtxKeyId, uuID)))
@@ -55,7 +58,7 @@ func (s *server) handleNews() http.HandlerFunc {
 	}
 }
 
-// Обработчик для скачивания картинок для новостей (table news)
+// Обработчик для скачивания картинок
 func (s *server) Download() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		key := r.URL.Path
@@ -106,27 +109,90 @@ func (s *server) handleUploadTimetable() http.HandlerFunc {
 }
 
 func (s *server) handleGetTimetable() http.HandlerFunc {
-	type answer struct {
-		Id    int    `json:"id"`
-		Title string `json:"title"`
-		Txt   string `json:"text"`
-		Time  int    `json:"time"`
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
-		req := &modeltimetable.Timetable{}
-		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.Err(w, r, http.StatusBadRequest, err)
+		key := strings.ReplaceAll(r.URL.Path, "/TimeTabel/", "")
+		s.Logger.Info(key)
+		id, err := strconv.Atoi(key)
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
 			s.Logger.Error(err)
 			return
 		}
 
-		data, err := s.store.Timetable().GetTimetable(req.IdUser)
+		data, err := s.store.Timetable().GetTimetable(id)
 		if err != nil {
 			s.Err(w, r, http.StatusInternalServerError, err)
 			s.Logger.Error(err)
+			return
 		}
 
 		s.respond(w, r, http.StatusOK, data)
+	}
+}
+
+// Поставили заглушку, так как не успевали
+func (s *server) handleGetScoreboard() http.HandlerFunc {
+	answer := &modelScoreboard.Scoreboard{
+		FirstTeam:    "Спартак",
+		SecondTeam:   "Динамо",
+		FirstNumber:  "1",
+		SecondNumber: "2",
+		Type:         "Футбол",
+		URL:          "https://www.youtube.com/watch?v=dGaMze_rOWk",
+		Term:         "1/2",
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.respond(w, r, http.StatusOK, answer)
+	}
+}
+
+func (s *server) handleGetTeam() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		key := strings.ReplaceAll(r.URL.Path, "/TeAm/", "")
+		s.Logger.Info(key)
+		id, err := strconv.Atoi(key)
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+			return
+		}
+
+		data, err := s.store.Teams().GetTeams(id)
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, data)
+	}
+}
+
+func (s *server) handleGetRegions() http.HandlerFunc {
+
+	regionList := []struct {
+		Place string `json:"place"`
+		Name  string `json:"region"`
+		Score string `json:"points"`
+	}{
+		{
+			Place: "1",
+			Name:  "Мурманская область",
+			Score: "15",
+		},
+		{
+			Place: "2",
+			Name:  "Иркутская область",
+			Score: "12",
+		},
+		{
+			Place: "3",
+			Name:  "Московская область",
+			Score: "6",
+		},
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.respond(w, r, http.StatusOK, regionList)
 	}
 }

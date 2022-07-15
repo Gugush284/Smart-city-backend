@@ -8,11 +8,13 @@ import (
 
 // Store for clients ...
 type SqlStore struct {
-	DbURL               string
-	Db                  *sql.DB
-	Newsrepository      *Newsrepository
-	Broadcastrepository *Broadcastrepository
-	Timetablerepository *Timetablerepository
+	DbURL                string
+	Db                   *sql.DB
+	Newsrepository       *Newsrepository
+	Broadcastrepository  *Broadcastrepository
+	Timetablerepository  *Timetablerepository
+	Teamsrepository      *Teamsrepository
+	Scoreboardrepository *Scoreboardrepository
 }
 
 // New Store ...
@@ -85,6 +87,16 @@ func (s *SqlStore) CreateTables() error {
 		txt				TEXT,
 		time			int          not null,
 		title			varchar(50)	 not null default 'Notitle'
+	)`); err != nil {
+		return err
+	}
+
+	if err := createTable(s, `create table IF NOT EXISTS teams (
+		id              integer      not null PRIMARY KEY AUTO_INCREMENT,
+		IdUser			varchar(50)  not null,
+		Name			varchar(50),
+		sport			varchar(50),
+		place			varchar(50)
 	)`); err != nil {
 		return err
 	}

@@ -14,6 +14,7 @@ var (
 )
 
 const SessionName = "activesession"
+const HostUrl = "https://a8790-70b7.s.d-f.pw"
 
 const (
 	CtxKeyUser ctxKey = iota

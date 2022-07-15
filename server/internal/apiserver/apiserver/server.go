@@ -29,6 +29,8 @@ func NewServer(store store.Store, sessionStore sessions.Store) *server {
 
 	s.configureRouter()
 
+	Fakepush = 0
+
 	return s
 }
 
@@ -50,6 +52,8 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/regions", s.handleGetRegions()).Methods("GET")
 	s.router.HandleFunc("/TeAm/{key}", s.handleGetTeam()).Methods("GET")
 	s.router.HandleFunc("/TimeTabel/{key}", s.handleGetTimetable()).Methods("GET")
+	s.router.HandleFunc("/push", s.handlePush()).Methods("GET")
+	s.router.HandleFunc("/message", s.handleMes()).Methods("GET")
 
 	s.router.HandleFunc("/upload/timetable", s.handleUploadTimetable()).Methods("POST")
 }

@@ -168,6 +168,7 @@ func (s *server) handleGetTeam() http.HandlerFunc {
 	}
 }
 
+// Поставили заглушку, так как не успевали
 func (s *server) handleGetRegions() http.HandlerFunc {
 
 	regionList := []struct {
@@ -194,5 +195,34 @@ func (s *server) handleGetRegions() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.respond(w, r, http.StatusOK, regionList)
+	}
+}
+
+// Иммитация push от админки
+func (s *server) handlePush() http.HandlerFunc {
+	type push struct {
+		Title string `json:"title"`
+		Txt   string `json:"text"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		if Fakepush != 0 {
+			Fakepush = 0
+
+			s.respond(w, r, http.StatusCreated, push{
+				Title: "Уведомление",
+				Txt:   "Мероприятие X переносится",
+			})
+		} else {
+			s.respond(w, r, http.StatusOK, nil)
+		}
+
+	}
+}
+
+func (s *server) handleMes() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		Fakepush = 1
+		s.respond(w, r, http.StatusOK, nil)
 	}
 }

@@ -15,6 +15,7 @@ type SqlStore struct {
 	Timetablerepository  *Timetablerepository
 	Teamsrepository      *Teamsrepository
 	Scoreboardrepository *Scoreboardrepository
+	Eventsrepository     *Eventsrepository
 }
 
 // New Store ...

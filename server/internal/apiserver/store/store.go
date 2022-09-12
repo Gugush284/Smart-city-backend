@@ -6,4 +6,5 @@ type Store interface {
 	Timetable() Timetablerepository
 	Teams() Teamsrepository
 	Scoreboard() Scoreboardrepository
+	Event() Eventsrepository
 }

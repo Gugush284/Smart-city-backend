@@ -2,6 +2,7 @@ package store
 
 import (
 	modelBroadcast "Smart-city/internal/apiserver/model/broadcast"
+	modelEvents "Smart-city/internal/apiserver/model/event"
 	modelNews "Smart-city/internal/apiserver/model/news"
 	modelTeams "Smart-city/internal/apiserver/model/teams"
 	modeltimetable "Smart-city/internal/apiserver/model/timetable"
@@ -25,4 +26,8 @@ type Teamsrepository interface {
 }
 
 type Scoreboardrepository interface {
+}
+
+type Eventsrepository interface {
+	GetEvents() ([]modelEvents.Event, error)
 }

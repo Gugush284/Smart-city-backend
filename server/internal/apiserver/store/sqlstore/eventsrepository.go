@@ -28,5 +28,65 @@ func (r *Eventsrepository) GetEvents() ([]modelEvents.Event, error) {
 		}
 	}
 
-	return nil, nil
+	data := []modelEvents.Event{}
+
+	rows, err := r.store.Db.Query("select * from eventdetaildto")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		n := &modelEvents.Event{}
+		err := rows.Scan(
+			&n.Id,
+			&n.Title,
+			&n.Description,
+			&n.BeginTime,
+			&n.EndTime,
+			&n.Address,
+			&n.Money,
+			&n.CurParticCount,
+			&n.TrgtParticCount,
+			&n.EventType,
+			&n.Picture,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		data = append(data, *n)
+	}
+
+	return data, nil
+}
+
+func (r *Eventsrepository) GetEvent(id string) (*modelEvents.Event, error) {
+	if err := r.store.Db.Ping(); err != nil {
+		if err := r.store.Open(); err != nil {
+			return nil, err
+		}
+	}
+
+	row := r.store.Db.QueryRow("select * from eventdetaildto where id = ?", id)
+
+	var data modelEvents.Event
+
+	if err := row.Scan(
+		&data.Id,
+		&data.Title,
+		&data.Description,
+		&data.BeginTime,
+		&data.EndTime,
+		&data.Address,
+		&data.Money,
+		&data.CurParticCount,
+		&data.TrgtParticCount,
+		&data.EventType,
+		&data.Picture,
+	); err != nil {
+		return nil, err
+	}
+
+	return &data, nil
 }

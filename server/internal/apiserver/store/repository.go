@@ -30,4 +30,5 @@ type Scoreboardrepository interface {
 
 type Eventsrepository interface {
 	GetEvents() ([]modelEvents.Event, error)
+	GetEvent(string) (*modelEvents.Event, error)
 }

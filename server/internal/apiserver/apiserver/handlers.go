@@ -226,3 +226,30 @@ func (s *server) handleMes() http.HandlerFunc {
 		s.respond(w, r, http.StatusOK, nil)
 	}
 }
+
+func (s *server) handleGetEvents() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		data, err := s.store.Event().GetEvents()
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+		}
+
+		s.respond(w, r, http.StatusOK, data)
+	}
+}
+
+func (s *server) handleGetEvent() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		key := strings.ReplaceAll(r.URL.Path, "/event/", "")
+
+		data, err := s.store.Event().GetEvent(key)
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+		}
+
+		s.respond(w, r, http.StatusOK, data)
+	}
+}

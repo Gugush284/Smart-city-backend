@@ -54,6 +54,9 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/TimeTabel/{key}", s.handleGetTimetable()).Methods("GET")
 	s.router.HandleFunc("/push", s.handlePush()).Methods("GET")
 	s.router.HandleFunc("/message", s.handleMes()).Methods("GET")
+	s.router.HandleFunc("/events", s.handleGetEvents()).Methods("GET")
+	s.router.HandleFunc("/events/{key}", s.Download()).Methods("GET")
+	s.router.HandleFunc("/event/{key}", s.handleGetEvent()).Methods("GET")
 
 	s.router.HandleFunc("/upload/timetable", s.handleUploadTimetable()).Methods("POST")
 }

@@ -86,6 +86,7 @@ func (r *Eventsrepository) GetEvent(id string) (*modelEvents.Event, error) {
 		&data.TrgtParticCount,
 		&data.EventType,
 		&data.Picture,
+		&data.Players,
 	); err != nil {
 		return nil, err
 	}

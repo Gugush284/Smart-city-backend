@@ -59,6 +59,7 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/event/{key}", s.handleGetEvent()).Methods("GET")
 
 	s.router.HandleFunc("/upload/timetable", s.handleUploadTimetable()).Methods("POST")
+	s.router.HandleFunc("/event/reg", s.handleRegEvent()).Methods("POST")
 }
 
 // Configuration of logger ...

@@ -90,3 +90,52 @@ func (r *Eventsrepository) GetEvent(id string) (*modelEvents.Event, error) {
 
 	return &data, nil
 }
+
+func (r *Eventsrepository) RegEvent(regevent *modelEvents.EventRegistratePLayers) (*modelEvents.Event, error) {
+	if err := r.store.Db.Ping(); err != nil {
+		if err := r.store.Open(); err != nil {
+			return nil, err
+		}
+	}
+
+	row := r.store.Db.QueryRow("select curCount from eventdetaildto where id = ?", regevent.Idevent)
+
+	var old_cur int
+
+	if err := row.Scan(&old_cur); err != nil {
+		return nil, err
+	}
+
+	l := len(regevent.ChosenPlayers) + old_cur
+
+	_, err := r.store.Db.Exec(
+		"UPDATE eventdetaildto SET curCount = ? WHERE id = ?",
+		l,
+		regevent.Idevent,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	row = r.store.Db.QueryRow("select * from eventdetaildto where id = ?", regevent.Idevent)
+
+	var data modelEvents.Event
+
+	if err := row.Scan(
+		&data.Id,
+		&data.Title,
+		&data.Description,
+		&data.BeginTime,
+		&data.EndTime,
+		&data.Address,
+		&data.Money,
+		&data.CurParticCount,
+		&data.TrgtParticCount,
+		&data.EventType,
+		&data.Picture,
+	); err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}

@@ -1,5 +1,7 @@
 package modelEvents
 
+import modelPlayerentity "Smart-city/internal/apiserver/model/PlayerEntity"
+
 type Event struct {
 	Id              int    `json:"id"`
 	Title           string `json:"title"`
@@ -12,4 +14,9 @@ type Event struct {
 	TrgtParticCount int    `json:"targetParticipationCount"`
 	EventType       string `json:"eventType"`
 	Picture         string `json:"picture"`
+}
+
+type EventRegistratePLayers struct {
+	Idevent       int `json:"idevent"`
+	ChosenPlayers []modelPlayerentity.Playerentity
 }

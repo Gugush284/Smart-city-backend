@@ -1,7 +1,9 @@
 package ServerClient
 
 import (
+	modelPlayerentity "Smart-city/internal/apiserver/model/PlayerEntity"
 	modelBroadcast "Smart-city/internal/apiserver/model/broadcast"
+	modelEvents "Smart-city/internal/apiserver/model/event"
 	modelNews "Smart-city/internal/apiserver/model/news"
 	modelTeams "Smart-city/internal/apiserver/model/teams"
 	modeltimetable "Smart-city/internal/apiserver/model/timetable"
@@ -17,7 +19,7 @@ import (
 
 func DownloadNews() []string {
 
-	resp, err := http.Get("https://a8797-7243.s.d-f.pw/news")
+	resp, err := http.Get("http://localhost:8080/news")
 	if err != nil {
 		log.Fatalf("Got error %s", err.Error())
 		return nil
@@ -44,7 +46,7 @@ func DownloadNews() []string {
 }
 
 func GetPic(url string, urlfull string) {
-	res, err := http.Get(strings.Join([]string{"https://a8797-7243.s.d-f.pw", urlfull}, "/"))
+	res, err := http.Get(strings.Join([]string{"http://localhost:8080", urlfull}, "/"))
 
 	if err != nil {
 		log.Fatalf("Got error %s", err.Error())
@@ -69,7 +71,7 @@ func GetPic(url string, urlfull string) {
 }
 
 func GetBroadcast() []string {
-	resp, err := http.Get("https://a8797-7243.s.d-f.pw/broadcast")
+	resp, err := http.Get("http://localhost:8080/broadcast")
 	if err != nil {
 		log.Fatalf("Got error %s", err.Error())
 		return nil
@@ -108,7 +110,7 @@ func UploadTimetable(idUser int) {
 		return
 	}
 
-	resp, err := http.Post("https://a8797-7243.s.d-f.pw/upload/timetable", "application/json", bytes.NewBuffer(bytesRepresentation))
+	resp, err := http.Post("http://localhost:8080/upload/timetable", "application/json", bytes.NewBuffer(bytesRepresentation))
 	if err != nil {
 		log.Fatalln(err)
 		return
@@ -138,7 +140,7 @@ func GetTimetable(idUser int) {
 		return
 	}
 
-	resp, err := http.Post("https://a8797-7243.s.d-f.pw/timetabel", "application/json", bytes.NewBuffer(bytesRepresentation))
+	resp, err := http.Post("http://localhost:8080/timetabel", "application/json", bytes.NewBuffer(bytesRepresentation))
 	if err != nil {
 		log.Fatalln(err)
 		return
@@ -172,7 +174,7 @@ func GetTeams(idUser int) {
 		return
 	}
 
-	resp, err := http.Post("https://a8798-e7ec.s.d-f.pw/team", "application/json", bytes.NewBuffer(bytesRepresentation))
+	resp, err := http.Post("http://localhost:8080/team", "application/json", bytes.NewBuffer(bytesRepresentation))
 	if err != nil {
 		log.Fatalln(err)
 		return
@@ -188,6 +190,56 @@ func GetTeams(idUser int) {
 	defer resp.Body.Close()
 
 	results := []modelTeams.Team{}
+	json.Unmarshal(body, &results)
+
+	for _, result := range results {
+		log.Println(result)
+	}
+}
+
+func RegEvent() {
+	players := []modelPlayerentity.Playerentity{
+		{
+			Id:         1,
+			Firstname:  "Sas",
+			Lastname:   "sok",
+			Middlename: "Tete",
+			Age:        45,
+		},
+		{
+			Id:         2,
+			Firstname:  "Pop",
+			Lastname:   "a",
+			Middlename: "pik",
+			Age:        5,
+		},
+	}
+
+	message := &modelEvents.EventRegistratePLayers{Idevent: 1}
+	message.ChosenPlayers = players
+
+	bytesRepresentation, err := json.Marshal(message)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	resp, err := http.Post("http://localhost:8080/event/reg", "application/json", bytes.NewBuffer(bytesRepresentation))
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	log.Println(resp.Status)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	results := []modeltimetable.Timetable{}
 	json.Unmarshal(body, &results)
 
 	for _, result := range results {

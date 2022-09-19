@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	Constants "Smart-city/internal/apiserver"
+	modelEvents "Smart-city/internal/apiserver/model/event"
 	modelScoreboard "Smart-city/internal/apiserver/model/scoreboard"
 	modeltimetable "Smart-city/internal/apiserver/model/timetable"
 	"context"
@@ -236,6 +237,27 @@ func (s *server) handleGetEvents() http.HandlerFunc {
 			s.Logger.Error(err)
 		}
 
+		s.respond(w, r, http.StatusOK, data)
+	}
+}
+
+func (s *server) handleRegEvent() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		req := &modelEvents.EventRegistratePLayers{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.Err(w, r, http.StatusBadRequest, err)
+			s.Logger.Error(err)
+			return
+		}
+
+		data, err := s.store.Event().RegEvent(req)
+		if err != nil {
+			s.Err(w, r, http.StatusInternalServerError, err)
+			s.Logger.Error(err)
+		}
+
+		s.Logger.Info(data)
 		s.respond(w, r, http.StatusOK, data)
 	}
 }

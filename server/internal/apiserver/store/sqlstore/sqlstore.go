@@ -71,6 +71,22 @@ func (s *SqlStore) CreateTables() error {
 		return err
 	}
 
+	if err := createTable(s, `create table IF NOT EXISTS eventdetaildto (
+		id              integer      not null PRIMARY KEY AUTO_INCREMENT,
+		title			varchar(50)	 not null default 'Noname',
+		description		TEXT,
+		beginTime		varchar(50),
+		endTime         varchar(50),
+		address         varchar(100),
+		money           integer,
+		curCount        integer,
+		targetCount     integer,
+		eventType       varchar(50),
+		picture         varchar(100)
+	)`); err != nil {
+		return err
+	}
+
 	if err := createTable(s, `create table IF NOT EXISTS news (
 		id              integer      not null PRIMARY KEY AUTO_INCREMENT,
 		title			varchar(50)	 not null default 'Notitle',

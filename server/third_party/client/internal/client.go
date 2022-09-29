@@ -213,6 +213,13 @@ func RegEvent() {
 			Middlename: "pik",
 			Age:        5,
 		},
+		{
+			Id:         3,
+			Firstname:  "Pop",
+			Lastname:   "рпар",
+			Middlename: "кук",
+			Age:        63,
+		},
 	}
 
 	message := &modelEvents.EventRegistratePLayers{Idevent: 1}
